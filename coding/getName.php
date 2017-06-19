@@ -19,7 +19,6 @@ catch (PDOException $e) {
   echo $e->getMessage();
 }
 ?>
-
 <select name="schueler">
   <?php
   if ($rc==0) {
@@ -27,15 +26,13 @@ catch (PDOException $e) {
   }
   else {
     foreach ($schuelerNamen as $schuelerName) {
-      $n = $schuelerName["name"];
+      $n = $schuelerName["name"].", ".$schuelerName["vorname"];
       if($schuelerName==$name) {
         $sel = "selected";
       } else $sel='';
       echo "<option value='$n' $sel>$n</option>";
     }
   }
-
-
   ?>
 </select>
 </body>

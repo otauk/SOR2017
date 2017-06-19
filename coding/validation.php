@@ -11,7 +11,6 @@ $stmt->execute();
 $rows = $stmt->rowCount();
 if ($rows>0) {$fehler .= "Die Schülerin/der Schüler <strong>$name</strong> aus der Klasse <strong>$klasse</strong> ist bereits für ein Projekt angemeldet.";}
 
-
 // Wenn Fehler vorliegen -> Ausgabe
 if($fehler) {$confirmation = "<div class='alert alert-danger'>$fehler</div>";}
 
@@ -31,7 +30,9 @@ else {
       "UPDATE schueler
       SET angemeldet=1
       WHERE name = ?");
-    $stmt2->bindValue(1, $name);
+      // Name muss getrennt werden!
+      $nameShort = explode(',', $name);
+    $stmt2->bindValue(1, $nameShort[0]);
 
 
       // Eintrag erfolgreich?

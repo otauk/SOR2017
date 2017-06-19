@@ -1,5 +1,6 @@
-<?php
-// var_dump($_POST);
+<?
+
+ // var_dump($_GET);
 $database = "anmeldungen";
 // Variablen definieren und leer machen
 $fehler = $confirmation = $klasse = $name = $vorname  = $projekt = "";
@@ -87,8 +88,10 @@ if (($_SERVER["REQUEST_METHOD"]) == "POST") {
 
 <?php
   // Liste der Klassen
-  $klassen = array('Auswahl...','5a', '5b','5c', '6a', '6b');
-	$schuelerListe = array('Auswahl...','Meier, Stefan', 'Wischnewski, Jerome', 'Diekhans, Kai', 'Baden, Isolde');
+  // $klassen = array('Auswahl...','5a', '5b','5c', '6a', '6b');
+	$kListe = $db->prepare("SELECT klasse FROM schueler GROUP BY klasse");
+	$kListe->execute();
+	$klassen = $kListe->fetchAll();
  ?>
 
 
@@ -101,18 +104,16 @@ if (($_SERVER["REQUEST_METHOD"]) == "POST") {
 					<p>
 						<label class="schueler" for="klasse">Klasse:</label>
 						<select name="klasse" onchange="showUser(this.value)">
+							<option value='Auswahl...'>Auswahl...</option>
 	            <?php foreach ($klassen as $klassenName) {
-	              if($klassenName==$klasse) {
-	                $sel = "selected";
-	              } else $sel='';
-	              echo "<option value='$klassenName' $sel>$klassenName</option>";
+	              echo "<option value='$klassenName[0]' $sel>$klassenName[0]</option>";
 	            }
 	            ?>
 	          </select>
 					</p>
 					<p>
 						<?php
-							$stmt = $db->prepare("SELECT * FROM schueler WHERE angemeldet = 0 ORDER BY klasse, name");
+							$stmt = $db->prepare("SELECT * FROM schueler WHERE angemeldet = 0 ORDER BY name");
 							$stmt->execute();
 							$schuelerNamen = $stmt->fetchAll();
 							$rc = $stmt->rowCount();
@@ -140,9 +141,6 @@ if (($_SERVER["REQUEST_METHOD"]) == "POST") {
 	            	<?=$project["titel"];?>
 	            </div>
 	            <hr />
-	            <div class="lehrer">
-	              Lehrer/in: <strong><?=$project["lehrer"];?></strong>
-	            </div>
 	            <div class="plaetze">
 	              Freie Plätze: <strong><?=$verfuegbar;?></strong>
 	            </div>

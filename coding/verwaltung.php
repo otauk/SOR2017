@@ -58,13 +58,6 @@ $schueler = $sch->fetchAll();
       </div>
     </nav>
 
-
-<?php
-  // Liste der Klassen
-  $klassen = array('Auswahl...','5a', '5b','5c', '6a');
- ?>
-
-
     <div class="container">
       <div class="">
         <h1>Verwaltung</h1>
@@ -84,14 +77,15 @@ $schueler = $sch->fetchAll();
 					<tbody>
 						<?php
 						foreach ($schueler as $schuelerEinzeln) {
+              $n = $schuelerEinzeln["name"].", ".$schuelerEinzeln["vorname"];
 							?>
 								<tr>
-									<td><?=$schuelerEinzeln["name"]; ?></td>
+									<td><?=$n;?></td>
 									<td><?=$schuelerEinzeln["klasse"]; ?></td>
                   <td>
                     <form class="schueler" name="schueler" action="verwaltung.php" method="post">
                       <input type="hidden" name="id" value="<?=$schuelerEinzeln["ID"]; ?>" />
-                      <input type="hidden" name="name" value="<?=$schuelerEinzeln["name"]; ?>" />
+                      <input type="hidden" name="name" value="<?=$n;?>" />
                       <input type="hidden" name="angemeldet" value="0" />
                       <button type="submit"> X </button>
                   </form>

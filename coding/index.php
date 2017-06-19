@@ -1,24 +1,24 @@
 <?php
 // var_dump($_POST);
-$database = "anmeldungen";
-
-// Auslesen der Projektdaten
 include("./conn.php");
+// Liste der Projektdaten
 $pro = $db->prepare("SELECT * FROM projekte");
 $pro->execute();
 $rcPro = $pro->rowCount();
 $projekte = $pro->fetchAll();
-
-
-$anm = $db->prepare("SELECT * FROM anmeldungen");
-$anm->execute();
-$rcAnm= $anm->rowCount();
-$anmeldungen = $anm->fetchAll();
-
-$sch = $db->prepare("SELECT * FROM schueler WHERE angemeldet = 0");
-$sch->execute();
-$rcSch = $sch->rowCount();
-$schueler = $sch->fetchAll();
+// Schüler ohne Pojekt
+$sOP = $db->prepare("SELECT * FROM schueler WHERE angemeldet = 0");
+$sOP->execute();
+$rcsOP = $sOP->rowCount();
+$sOhneProjekt = $sOP->fetchAll();
+// Schüler mit Projekt
+$sMP = $db->prepare("SELECT a.name, a.klasse, p.titel
+FROM anmeldungen a
+LEFT JOIN projekte p
+ON a.projekt_id  = p.ID");
+$sMP->execute();
+$rcsMP = $sMP->rowCount();
+$sMitProjekt = $sMP->fetchAll();
 
  ?>
 <!DOCTYPE html>
@@ -73,7 +73,7 @@ $schueler = $sch->fetchAll();
       <div class="">
         <h1>Übersicht</h1>
 				<p>
-					Es liegen bisher insgesamt <strong><?=$rcAnm ?></strong> Anmeldungen in <strong><?=$rcPro; ?></strong> Projekten vor.
+					Es liegen bisher insgesamt <strong><?=$rcsMP; ?></strong> Anmeldungen in <strong><?=$rcPro; ?></strong> Projekten vor.
 				</p>
 				<hr>
 				<h2>Projekte</h2>
@@ -106,27 +106,30 @@ $schueler = $sch->fetchAll();
 					</tbody>
 				</table>
 				<hr />
-				<h2>Schüler ohne Projekt</h2>
+				<h2>Schüler ohne Projekt (akuell: <?=$rcsOP; ?>)</h2>
 				<table class="display" id="schuelerTable">
 					<thead>
 						<tr>
 							<th>Name</th>
 							<th>Klasse</th>
+              <th>Klassenlehrer/in</th>
 						</tr>
 					</thead>
 					<tbody>
 						<?php
-						foreach ($schueler as $schuelerEinzeln) {
+						foreach ($sOhneProjekt as $sOhneProjektEinzeln) {
+              $nOP = $sOhneProjektEinzeln["name"].", ".$sOhneProjektEinzeln["vorname"];
 							?>
 								<tr>
-									<td><?=$schuelerEinzeln["name"]; ?></td>
-									<td><?=$schuelerEinzeln["klasse"]; ?></td>
+									<td><?=$nOP; ?></td>
+									<td><?=$sOhneProjektEinzeln["klasse"]; ?></td>
+                  <td><?=$sOhneProjektEinzeln["klassenlehrer"]; ?></td>
 								</tr>
 						<?php } ?>
 					</tbody>
 				</table>
 				<hr />
-        <h2>Schüler mit Projekt</h2>
+        <h2>Schüler mit Projekt (aktuell: <?=$rcsMP; ?>)</h2>
 				<table class="display" id="schuelerTableProjekte">
 					<thead>
 						<tr>
@@ -137,17 +140,13 @@ $schueler = $sch->fetchAll();
 					</thead>
 					<tbody>
 						<?php
-						foreach ($schueler as $schuelerEinzeln) {
-              $a = $schuelerEinzeln["name"];
-              $proj = $db->prepare("SELECT name FROM anmeldungen");
-							$proj->execute();
-              $project = $proj->fetchAll();
-              var_dump($project);
+						foreach ($sMitProjekt as $sMitProjektEinzeln) {
+              $nMP = $sMitProjektEinzeln["name"].", ".$sMitProjektEinzeln["vorname"];
 							?>
 								<tr>
-									<td><?=$schuelerEinzeln["name"]; ?></td>
-									<td><?=$schuelerEinzeln["klasse"]; ?></td>
-                  <td></td>
+									<td><?=$sMitProjektEinzeln["name"]; ?></td>
+									<td><?=$sMitProjektEinzeln["klasse"]; ?></td>
+                  <td><?=$sMitProjektEinzeln["titel"]; ?></td>
 								</tr>
 						<?php } ?>
 					</tbody>
