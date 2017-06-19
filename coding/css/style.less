@@ -1,0 +1,172 @@
+// out: ./style.css, sourcemap: false, compress: true
+
+@import url('https://fonts.googleapis.com/css?family=Archivo+Narrow');
+@cGruen: #709500;
+@cGrau: #d5d5d5;
+@cCopy: #4d4d4d;
+@pStandard: 15px;
+
+body {
+  padding-top: 50px;
+  color: @cCopy;
+  font-size: 16px;
+  font-family: 'Archivo Narrow', sans-serif;
+}
+.starter-template {
+  padding: 40px 15px;
+  text-align: center;
+}
+
+h1 {
+  color: @cGruen;
+  margin-bottom: 1em;
+}
+
+h2 {
+  margin-bottom: 1em;
+}
+
+a {
+  color: @cGruen;
+
+  &:hover {
+    color: @cCopy;
+  }
+}
+
+.navbar-fixed-top {
+  background: @cGrau;
+}
+
+.klasse {
+  width: 25%;
+  margin-left: 1em;
+}
+
+label {
+  display: inline-block;
+  font-weight: normal;
+
+  &.schueler {
+    width: 10%;
+  }
+}
+
+input {
+  padding:5px @pStandard;
+  margin: @pStandard;
+  width: 80%;
+}
+
+.anmeldenButton {
+  margin: 0;
+  border: none;
+  display: block;
+  background: @cGrau;
+  color: @cGruen;
+  width: 100%;
+  font-size: 1.5em;
+  text-align: center;
+
+
+	&:hover {
+    background: @cGruen;
+    color:#fff;
+			}
+}
+
+.anmeldenButton label {
+    margin: 0;
+    font-weight: normal;
+    width: 100%;
+}
+
+.anmeldenButton label span {
+    text-align:center;
+    padding:@pStandard;
+    display:block;
+    cursor: pointer;
+
+    & .small {
+      padding: 0;
+    }
+}
+
+.anmeldenButton label input {
+    position:absolute;
+    top:-20px;
+    display: none;
+}
+
+.anmeldenButton input:checked + span {
+    background: #fff;
+	color:#fff;
+}
+
+
+.projekte {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.projekt {
+  width: 45%;
+  border: 5px solid @cGruen;
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px @cGrau;
+  padding: @pStandard;
+  line-height: 1.5em;
+  margin-bottom: 5%;
+
+  & .titel {
+    font-size: 1.5em;
+    color: @cGruen;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  & .lehrer {
+    float: left;
+  }
+  & .plaetze {
+    float: right;
+  }
+
+  & .anmeldung {
+
+    & .button {
+      margin: 0;
+      border: none;
+      display: block;
+      background: @cGrau;
+      color: @cGruen;
+      padding: @pStandard;
+      width: 100%;
+      font-size: 1.5em;
+      text-align: center;
+
+
+      &:hover {
+        background: @cGruen;
+        color:#fff;
+
+      }
+    }
+  }
+
+}
+
+.alert {
+  border-radius: 8px;
+
+  &.green {
+    background: @cGruen;
+    color: #fff;
+  }
+
+  &.red {
+    background: red;
+    color: @cGruen;
+  }
+}
