@@ -12,7 +12,7 @@ $sOP->execute();
 $rcsOP = $sOP->rowCount();
 $sOhneProjekt = $sOP->fetchAll();
 // Schüler mit Projekt
-$sMP = $db->prepare("SELECT a.name, a.klasse, p.titel
+$sMP = $db->prepare("SELECT a.name, a.vorname, a.klasse, p.titel
 FROM anmeldungen a
 LEFT JOIN projekte p
 ON a.projekt_id  = p.ID");
@@ -33,6 +33,8 @@ $sMitProjekt = $sMP->fetchAll();
     <title>Anmeldeverfahren SOR 2017</title>
     <link href="./css/bootstrap.min.css" rel="stylesheet">
     <link href="./css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
 		<link href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css" rel="stylesheet">
 
     <!--[if lt IE 9]>
@@ -106,8 +108,11 @@ $sMitProjekt = $sMP->fetchAll();
 					</tbody>
 				</table>
 				<hr />
-				<h2>Schüler ohne Projekt (akuell: <?=$rcsOP; ?>)</h2>
-				<table class="display" id="schuelerTable">
+        <h2>Schüler ohne Projekt (akuell: <?=$rcsOP; ?>)</h2>
+        <div class="accordion">
+          <h3> Alle anzeigen</h3>
+				<div>
+          <table class="display" id="schuelerTable">
 					<thead>
 						<tr>
 							<th>Name</th>
@@ -128,9 +133,14 @@ $sMitProjekt = $sMP->fetchAll();
 						<?php } ?>
 					</tbody>
 				</table>
+        </div>
+        </div>
 				<hr />
         <h2>Schüler mit Projekt (aktuell: <?=$rcsMP; ?>)</h2>
-				<table class="display" id="schuelerTableProjekte">
+        <div class="accordion">
+          <h3>Alle anzeigen</h3>
+          <div>
+	           <table class="display" id="schuelerTableProjekte">
 					<thead>
 						<tr>
 							<th>Name</th>
@@ -144,17 +154,20 @@ $sMitProjekt = $sMP->fetchAll();
               $nMP = $sMitProjektEinzeln["name"].", ".$sMitProjektEinzeln["vorname"];
 							?>
 								<tr>
-									<td><?=$sMitProjektEinzeln["name"]; ?></td>
+									<td><?=$nMP; ?></td>
 									<td><?=$sMitProjektEinzeln["klasse"]; ?></td>
                   <td><?=$sMitProjektEinzeln["titel"]; ?></td>
 								</tr>
 						<?php } ?>
 					</tbody>
 				</table>
+          </div>
+        </div>
 				<hr />
       </div>
     </div><!-- /.container -->
     <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
 		<script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
     <script src="./js/bootstrap.min.js"></script>
 		<script>
@@ -179,5 +192,13 @@ $sMitProjekt = $sMP->fetchAll();
       } );
 		} );
 		</script>
+    <script>
+ $( function() {
+   $( ".accordion" ).accordion({
+     collapsible:true,
+     active: false
+   });
+ } );
+ </script>
   </body>
 </html>

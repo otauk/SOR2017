@@ -108,9 +108,61 @@ if (($_SERVER["REQUEST_METHOD"]) == "POST") {
 	            ?>
 	          </select>
 					</p>
-					<div id="ajaxCall"></div>
+					<p>
+						<div id="ajaxCall"></div>
+					</p>
+          <hr />
+          <h2>Projekte</h2>
+          <div class="projekte">
+
+	          <?php
+						// Projektdaten
+						$stmt = $db->prepare("SELECT * FROM projekte ORDER BY ID");
+						$stmt->execute();
+						$rows_gesamt = $stmt->rowCount();
+						$projects = $stmt->fetchAll();
+
+						foreach($projects as $project) {
+								// Freie Plätze
+								$a = $project["maxTN"];
+								$b = $project["ID"];
+								$stmt = $db->prepare("SELECT * FROM anmeldungen WHERE projekt_id = $b");
+								$stmt->execute();
+								$b = $stmt->rowCount();
+								$verfuegbar = $a - $b;
+								if ($verfuegbar<=0) {
+									$display = "none";
+								} else $display="";
+						?>
+	          <div class="projekt" style="display:<?=$display;?>">
+	            <div class="titel">
+	            	<?=$project["titel"];?>
+	            </div>
+	            <hr />
+	            <div class="plaetze">
+	              Freie Plätze: <strong><?=$verfuegbar;?></strong>
+	            </div>
+							<div style="clear:both;">
+							</div>
+	            <hr />
+	            <div class="anmeldung">
+	              <div class='anmeldenButton'>
+									<label>
+										<input name='projekt' type='radio' value='<?=$project["ID"] ?>' onclick="this.form.submit();">
+										<span>Anmelden</span>
+									</label>
+								</div>
+	            </div>
+	          </div>
+	          	<?php } ?>
+          </div>
         </form>
     </div><!-- /.container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
     <script src="./js/bootstrap.min.js"></script>
   </body>

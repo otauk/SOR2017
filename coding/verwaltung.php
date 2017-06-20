@@ -1,20 +1,26 @@
 <?php
+ // var_dump($_POST);
  include("./conn.php");
  // Daten gesendet?
  if (($_SERVER["REQUEST_METHOD"]) == "POST") {
- 	$reset = $db->prepare("UPDATE schueler SET angemeldet = 0 WHERE ID=?");
-  $reset->bindParam(1, $_POST["id"]);
-  $reset->execute();
-  $a = $_POST["name"];
-  $delete = $db->prepare("DELETE FROM anmeldungen WHERE name=?");
-  $delete->bindParam(1, $a);
-  $delete->execute();
+    $sid = $_POST["id"];
+   // Angmeldet zurücksetzen
+    $reset = $db->prepare("UPDATE schueler SET angemeldet = 0 WHERE ID=?");
+    $reset->bindParam(1, $sid);
+    $reset->execute();
+    // Löschen aus anmeldungen
+    $delete = $db->prepare("DELETE FROM anmeldungen WHERE schueler_id = ?");
+    $delete->bindParam(1, $sid);
+    $delete->execute();
  }
 
-$sch = $db->prepare("SELECT * FROM schueler WHERE angemeldet = 1");
-$sch->execute();
-$rcSch = $sch->rowCount();
-$schueler = $sch->fetchAll();
+$sMP = $db->prepare("SELECT a.name, a.vorname, a.klasse, a.schueler_id, p.titel
+FROM anmeldungen a
+LEFT JOIN projekte p
+ON a.projekt_id  = p.ID");
+$sMP->execute();
+$rcsMP = $sMP->rowCount();
+$sMitProjekt = $sMP->fetchAll();
 
  ?>
 <!DOCTYPE html>
@@ -71,20 +77,22 @@ $schueler = $sch->fetchAll();
 						<tr>
 							<th>Name</th>
 							<th>Klasse</th>
+              <th>Projekt</th>
               <th>Löschen</th>
 						</tr>
 					</thead>
 					<tbody>
 						<?php
-						foreach ($schueler as $schuelerEinzeln) {
+						foreach ($sMitProjekt as $schuelerEinzeln) {
               $n = $schuelerEinzeln["name"].", ".$schuelerEinzeln["vorname"];
 							?>
 								<tr>
 									<td><?=$n;?></td>
 									<td><?=$schuelerEinzeln["klasse"]; ?></td>
+                  <td><?=$schuelerEinzeln["titel"]; ?></td>
                   <td>
                     <form class="schueler" name="schueler" action="verwaltung.php" method="post">
-                      <input type="hidden" name="id" value="<?=$schuelerEinzeln["ID"]; ?>" />
+                      <input type="hidden" name="id" value="<?=$schuelerEinzeln["schueler_id"]; ?>" />
                       <input type="hidden" name="name" value="<?=$n;?>" />
                       <input type="hidden" name="angemeldet" value="0" />
                       <button type="submit"> X </button>

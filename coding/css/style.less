@@ -48,7 +48,7 @@ label {
   font-weight: normal;
 
   &.schueler {
-    width: 10%;
+    width: 15%;
   }
 }
 
@@ -124,6 +124,7 @@ input {
     color: @cGruen;
     font-weight: bold;
     text-align: center;
+    min-height: 5em;
   }
 
   & .plaetze {
@@ -165,5 +166,12 @@ input {
   &.red {
     background: red;
     color: @cGruen;
+  }
+}
+
+.ui-accordion {
+  .ui-accordion-header-active{
+  border:none;
+  background: @cGruen;
   }
 }
