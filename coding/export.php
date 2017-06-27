@@ -1,25 +1,32 @@
 <?php
-// var_dump($_POST);
+$projekt_id = $_POST["projekt_id"];
 include("./conn.php");
 // Liste der Projektdaten
 $pro = $db->prepare("SELECT * FROM projekte");
 $pro->execute();
 $rcPro = $pro->rowCount();
 $projekte = $pro->fetchAll();
-// Schüler ohne Pojekt
-$sOP = $db->prepare("SELECT * FROM schueler WHERE angemeldet = 0");
-$sOP->execute();
-$rcsOP = $sOP->rowCount();
-$sOhneProjekt = $sOP->fetchAll();
-// Schüler mit Projekt
-$sMP = $db->prepare("SELECT a.name, a.vorname, a.klasse, p.titel
-FROM anmeldungen a
-LEFT JOIN projekte p
-ON a.projekt_id  = p.ID");
-$sMP->execute();
-$rcsMP = $sMP->rowCount();
-$sMitProjekt = $sMP->fetchAll();
 
+
+if (($_SERVER["REQUEST_METHOD"]) == "POST") {
+  try {
+    $sListe = $db->prepare("SELECT name, vorname, klasse
+    FROM anmeldungen
+    WHERE projekt_id=?
+    ORDER BY klasse, name
+    ");
+    $sListe->bindValue(1, $projekt_id);
+    $sListe->execute();
+    $rcsMP = $sListe->rowCount();
+    $schuelerListe = $sListe->fetchAll();
+    foreach ($schuelerListe as $schueler) {
+      echo "Name: ".$schueler["name"].", Vorname: ".$schueler["vorname"].", Klasse: ".$schueler["klasse"]."<br/>";
+    }
+  }
+  catch (PDOException $e) {
+    echo $e->getMessage();
+  }
+}
  ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -30,7 +37,7 @@ $sMitProjekt = $sMP->fetchAll();
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="favicon.ico">
-    <title>Anmeldeverfahren SOR 2017</title>
+    <title>Anmeldeverfahren SOR 2017_DEV</title>
     <link href="./css/bootstrap.min.css" rel="stylesheet">
     <link href="./css/style.css" rel="stylesheet">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -52,41 +59,29 @@ $sMitProjekt = $sMP->fetchAll();
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <span class="navbar-brand">Anmeldung SOR 2017</span>
+          <span class="navbar-brand">Anmeldung SOR 2017_DEV</span>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
             <li><a href="index.php">Übersicht</a></li>
             <li><a href="anmeldung.php">Neue Anmeldung</a></li>
             <li><a href="verwaltung.php">Verwaltung</a></li>
-            <li><a href="export.php">Export</a></li>
+            <li><a href="export.php">Exporte</a></li>
+
           </ul>
         </div><!--/.nav-collapse -->
       </div>
     </nav>
 
-
-<?php
-  // Liste der Klassen
-  $klassen = array('Auswahl...','5a', '5b','5c', '6a');
- ?>
-
-
     <div class="container">
       <div class="">
-        <h1>Übersicht</h1>
-				<p>
-					Es liegen bisher insgesamt <strong><?=$rcsMP; ?></strong> Anmeldungen in <strong><?=$rcPro; ?></strong> Projekten vor.
-				</p>
-				<hr>
-				<h2>Projekte</h2>
+        <h1>Export</h1>
 				<table class="display" id="projekteTable">
 					<thead>
 						<tr>
-							<th>Titel</th>
+							<th>Projekt</th>
 							<th>Teilnehmer</th>
-							<th>Freie Plätze</th>
-							<th>maxTN</th>
+							<th>Export</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -97,74 +92,21 @@ $sMitProjekt = $sMP->fetchAll();
 							$stmt = $db->prepare("SELECT * FROM anmeldungen WHERE projekt_id = $b");
 							$stmt->execute();
 							$b = $stmt->rowCount();
-							$verfuegbar = $a - $b;
 							?>
 								<tr>
 									<td><?=$projekt["titel"]; ?></td>
 									<td><?=$b;?></td>
-									<td><?=$verfuegbar;?></td>
-									<td><?=$projekt["maxTN"]; ?></td>
+									<td>
+                    <form class="export" name="export" action="exporte.php" method="post">
+                      <input type="hidden" name="projekt_id" value="<?=$projekt["ID"]; ?>" />
+                      <input type="hidden" name="projekt_titel" value="<?=$projekt["titel"]; ?>" />
+
+                      <button type="submit"> <> </button>
+                    </form>
 								</tr>
 						<?php } ?>
 					</tbody>
 				</table>
-				<hr />
-        <h2>Schüler ohne Projekt (akuell: <?=$rcsOP; ?>)</h2>
-        <div class="accordion">
-          <h3> Alle anzeigen</h3>
-				<div>
-          <table class="display" id="schuelerTable">
-					<thead>
-						<tr>
-							<th>Name</th>
-							<th>Klasse</th>
-              <th>Klassenlehrer/in</th>
-						</tr>
-					</thead>
-					<tbody>
-						<?php
-						foreach ($sOhneProjekt as $sOhneProjektEinzeln) {
-              $nOP = $sOhneProjektEinzeln["name"].", ".$sOhneProjektEinzeln["vorname"];
-							?>
-								<tr>
-									<td><?=$nOP; ?></td>
-									<td><?=$sOhneProjektEinzeln["klasse"]; ?></td>
-                  <td><?=$sOhneProjektEinzeln["klassenlehrer"]; ?></td>
-								</tr>
-						<?php } ?>
-					</tbody>
-				</table>
-        </div>
-        </div>
-				<hr />
-        <h2>Schüler mit Projekt (aktuell: <?=$rcsMP; ?>)</h2>
-        <div class="accordion">
-          <h3>Alle anzeigen</h3>
-          <div>
-	           <table class="display" id="schuelerTableProjekte">
-					<thead>
-						<tr>
-							<th>Name</th>
-							<th>Klasse</th>
-              <th>Projekt</th>
-						</tr>
-					</thead>
-					<tbody>
-						<?php
-						foreach ($sMitProjekt as $sMitProjektEinzeln) {
-              $nMP = $sMitProjektEinzeln["name"].", ".$sMitProjektEinzeln["vorname"];
-							?>
-								<tr>
-									<td><?=$nMP; ?></td>
-									<td><?=$sMitProjektEinzeln["klasse"]; ?></td>
-                  <td><?=$sMitProjektEinzeln["titel"]; ?></td>
-								</tr>
-						<?php } ?>
-					</tbody>
-				</table>
-          </div>
-        </div>
-				<hr />
       </div>
     </div><!-- /.container -->
     <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>

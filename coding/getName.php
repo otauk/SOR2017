@@ -63,7 +63,7 @@ foreach ($projekte as $projekt) {
 ?>
   <div class="projekt" style="display:<?=$display;?>">
     <div class="titel">
-    <?=$projekt["titel"];?>
+    <?="Projektnr. ".$projekt["ID"]."<br/>".$projekt["titel"];?>
   </div>
     <hr />
     <div class="plaetze">
